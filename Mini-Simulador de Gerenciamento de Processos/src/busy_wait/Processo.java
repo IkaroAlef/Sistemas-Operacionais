@@ -1,6 +1,6 @@
 package busy_wait;
 
-public class Processo implements Runnable{
+public class Processo extends Thread{
 	
 	int pid;
 	
@@ -11,29 +11,33 @@ public class Processo implements Runnable{
 		pid = pidCount++;
 	}
 	
-	public void tryRC(){
-		while(turn == 1){
-			System.out.println("O processo P"+pid+"esta tentando entrar na RC");
-		}
+	public void enterRC() throws InterruptedException{
 		turn=1;
-	}
-	
-	public void enterRC(){
 		System.out.println("O processo P"+pid+" entrou na RC");
+		sleep(2000);
 	}
 	
-	public outRC(){
-		
+	public void outRC() throws InterruptedException{
+		System.out.println("O processo P"+pid+" saiu da RC");
+		turn=0;
+		sleep(2000);
 	}
 
 	@Override
 	public void run() {
-		this.tryRC();
-		this.enterRC();
-		
-		this.outRC();
-		
+		try {
+			while(turn == 1){
+				System.out.println("O processo P"+pid+" esta tentando entrar na RC");
+				Thread.sleep(2000);
+			}
+			this.enterRC();
+			this.outRC();
+			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	
+	
 	}
-	
-	
+
 }
